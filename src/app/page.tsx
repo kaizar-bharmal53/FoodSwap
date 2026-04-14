@@ -5,6 +5,7 @@ import { Search, X, AlertCircle } from "lucide-react";
 import type { Cart, Product } from "@/lib/types";
 import ProductCard from "@/components/ProductCard";
 import Header from "@/components/Header";
+import FloatingCartButton from "@/components/FloatingCartButton";
 import { useAuth } from "@/context/AuthContext";
 
 async function parseJsonResponse<T>(response: Response): Promise<T> {
@@ -86,6 +87,7 @@ export default function ProductsPage() {
   });
 
   const cartCount = cart?.items.reduce((sum, i) => sum + i.quantity, 0) ?? 0;
+  const cartTotal = cart?.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0) ?? 0;
   const inStock = products.filter((p) => p.inStock).length;
 
   return (
@@ -191,6 +193,8 @@ export default function ProductsPage() {
           </div>
         )}
       </main>
+
+      <FloatingCartButton cartCount={cartCount} cartTotal={cartTotal / 100} />
     </div>
   );
 }

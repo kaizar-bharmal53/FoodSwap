@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, CreditCard, Zap, ShoppingBag, LogIn, ShieldCheck, Sparkles, Plus } from "lucide-react";
+import { ArrowLeft, CreditCard, ShoppingBag, LogIn, ShieldCheck, Sparkles, Plus } from "lucide-react";
 import type { Cart, Product } from "@/lib/types";
 import CartItemRow from "@/components/CartItemRow";
 import Header from "@/components/Header";
@@ -19,7 +19,6 @@ export default function CartPage() {
 
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
-  const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [addingRec, setAddingRec] = useState<string | null>(null);
@@ -81,25 +80,6 @@ export default function CartPage() {
     if (json.error) throw new Error(json.error);
     setCart(json.data);
   }, []);
-
-  const handleSimulatedCheckout = async () => {
-    setCheckingOut(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentMethod: "simulated" }),
-      });
-      const json = await res.json();
-      if (json.error) throw new Error(json.error);
-      router.push("/orders?success=1");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout failed");
-    } finally {
-      setCheckingOut(false);
-    }
-  };
 
   const cartCount = cart?.items.reduce((sum, i) => sum + i.quantity, 0) ?? 0;
   const subtotal  = cart?.items.reduce((sum, i) => sum + i.product.price * i.quantity, 0) ?? 0;
@@ -226,16 +206,10 @@ export default function CartPage() {
                       </Link>
                     </div>
                   ) : (
-                    <>
-                      <Button size="lg" className="w-full" onClick={() => router.push("/checkout")}>
-                        <CreditCard size={14} />
-                        Pay with Stripe
-                      </Button>
-                      <Button variant="secondary" size="lg" className="w-full" loading={checkingOut} onClick={handleSimulatedCheckout}>
-                        <Zap size={14} />
-                        Simulate Payment
-                      </Button>
-                    </>
+                    <Button size="lg" className="w-full" onClick={() => router.push("/checkout")}>
+                      <CreditCard size={14} />
+                      Proceed to Checkout
+                    </Button>
                   )}
                 </div>
               </div>
