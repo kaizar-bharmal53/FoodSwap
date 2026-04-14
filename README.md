@@ -2,48 +2,52 @@
 
 A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, and `Next.js Route Handlers`.
 
-The project covers the full assessment flow: product listing, cart management, checkout, and persisted orders.
+## Features
 
-## Assignment Coverage
+### Core POS Flow
 
-### 1) Product Management
+- Product catalog with name, price, SKU, category, stock status, and images/placeholders
+- Add products from the catalog into cart
+- Update quantity, add notes, or remove items from cart
+- Cart summary with subtotal, VAT (5%), discount (if promo applies), and final total
+- Checkout with delivery details and payment step
+- Order creation and persisted order history
 
-- Product list includes `name`, `price`, and `sku/id`
-- Add product to cart
-- Update quantity in cart
-- Remove product from cart
+### Customer Features
 
-### 2) Cart and Checkout
+- Register, login, and logout with cookie-based sessions
+- Protected routes for checkout, orders, and account
+- Favorite products from catalog and manage them in account page
+- Save delivery addresses, set default address, and delete saved addresses
+- Promo code validation and discount calculation
+- Delivery scheduling support (ASAP or selected date/time)
+- Recommended products in cart based on co-purchase history
+- Account profile updates (name + password)
 
-- Cart summary includes line items, subtotal, tax, and total
-- Checkout supports:
-  - simulated payment (works without Stripe)
-  - Stripe test mode via PaymentIntent + Payment Element
+### Admin Features
 
-### 3) Orders
+- Admin dashboard with revenue and operational summaries
+- Product management (create, edit, and stock toggle)
+- Order management (filter orders, inspect line items, update status: complete/refund/void)
+- Promo code management (create, activate/deactivate, delete)
+- Analytics endpoint + charts (revenue trend and top products)
 
-- Checkout creates an order record on backend
-- Order data persists in PostgreSQL (Prisma)
-- Orders page lists past orders with total, date, and status
+### Reliability and UX Details
 
-### 4) Technical Requirements
+- Loading, error, and empty states across major pages
+- Role-based behavior in both UI and API
+- Server-side validation and status-specific API errors
+- Stripe fallback to simulated payment when Stripe keys are missing
+- Database health check endpoint (`/api/health/db`)
 
-- Next.js + TypeScript
-- Functional React components + hooks
-- Reusable component structure in `src/components`
-- Loading, error, and empty states handled across key pages
-- REST APIs for products, cart, orders, and related flows
-- Validation and error handling in API handlers
-- Includes tests (`npm test`)
+## Assessment Checklist
 
-### Additional Features Included
-
-- Taxes + promo discounts
-- Refund / void order status flow
-- Role-based access (`customer` / `admin`)
-- Admin analytics dashboard
-- Light/dark mode
-- Product recommendation endpoint
+- Product management: done
+- Cart + checkout: done
+- Orders + persistence: done
+- REST APIs + validation: done
+- Test coverage: included (`npm test`)
+- Bonus work included: taxes, promo codes, refund/void flow, role-based access, analytics, recommendations, dark mode
 
 ## Tech Stack
 
@@ -64,6 +68,13 @@ The project covers the full assessment flow: product listing, cart management, c
 
 ## Main API Endpoints
 
+### Auth and Session
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `PATCH /api/auth/me` (update name/password)
+
 ### Products
 - `GET /api/products`
 - `POST /api/products` (admin)
@@ -82,7 +93,29 @@ The project covers the full assessment flow: product listing, cart management, c
 - `POST /api/checkout` (create order)
 - `GET /api/orders`
 - `GET /api/orders/:id`
-- `PATCH /api/orders/:id`
+- `PATCH /api/orders/:id` (admin status update)
+
+### Favorites and Recommendations
+- `GET /api/favorites`
+- `POST /api/favorites` (toggle favorite)
+- `GET /api/recommendations?productIds=...`
+
+### Addresses and Promos
+- `GET /api/addresses`
+- `POST /api/addresses`
+- `PATCH /api/addresses/:id`
+- `DELETE /api/addresses/:id`
+- `GET /api/promo/:code`
+
+### Admin
+- `GET /api/admin/analytics`
+- `GET /api/admin/promos`
+- `POST /api/admin/promos`
+- `PATCH /api/admin/promos/:id`
+- `DELETE /api/admin/promos/:id`
+
+### Health
+- `GET /api/health/db`
 
 ## Project Structure
 
@@ -94,7 +127,10 @@ src/
     cart/page.tsx
     checkout/page.tsx
     orders/page.tsx
-    admin/               # admin features (bonus)
+    account/page.tsx
+    login/page.tsx
+    register/page.tsx
+    admin/               # admin dashboard, products, orders, promotions
   components/            # reusable UI and feature components
   context/               # auth/session context
   lib/                   # db, auth, store, types, utils
@@ -107,44 +143,50 @@ prisma/
 
 ### 1) How did you structure the POS flow (products → cart → checkout → orders)?
 
-I structured the system as a linear transactional flow, with each step mapped to both a dedicated UI route and a backend API boundary:
+The flow is intentionally simple and step-by-step, similar to a real POS:
 
-1. **Products (`/`)**  
-   The page fetches products from `GET /api/products` and renders actionable product cards.
-2. **Cart (`/cart`)**  
-   Item mutations (`add`, `update quantity`, `remove`) call cart endpoints and return the updated cart payload.
-3. **Checkout (`/checkout`)**  
-   Delivery/payment details are validated, then payment is processed via simulated mode or Stripe test mode.
+1. **Products page (`/`)**  
+   Products are fetched from `GET /api/products` and shown with name, price, and SKU.  
+   Users can add items to cart from here.
+2. **Cart page (`/cart`)**  
+   Users can increase quantity, decrease quantity, or remove an item.  
+   These actions call cart APIs and return the updated cart.
+3. **Checkout page (`/checkout`)**  
+   Delivery and payment fields are validated, then payment is processed (simulated or Stripe test mode).
 4. **Order creation**  
-   On successful checkout, backend creates an order record from a cart snapshot and clears the cart.
-5. **Orders (`/orders`)**  
-   The orders page reads persisted orders and displays total, date, and status.
+   If payment succeeds, backend creates an order from current cart data and clears the cart.
+5. **Orders page (`/orders`)**  
+   Saved orders are fetched and shown with total, date, and status.
 
-This sequence keeps responsibilities clear and makes the flow easy to test end-to-end.
+This gives clear separation between selection, cart handling, and final order creation.
 
 ### 2) How did you manage the state between cart and backend?
 
-I used a server-authoritative cart model:
+A frontend + backend mix is used, but backend remains the source of truth:
 
-- The cart is persisted in PostgreSQL (via Prisma).
-- Frontend state is a local UI projection only.
-- Every cart mutation goes through an API endpoint.
-- The client replaces local cart state with the latest server response after each mutation.
+- On frontend, I use React state/hooks to keep the UI fast and responsive.
+- Cart data is stored in PostgreSQL using Prisma.
+- Every cart change (`add`, `update`, `remove`) goes through API endpoints.
+- After each API call, I update local cart state from the server response.
 
-This approach avoids client/server drift, keeps business rules centralized on the backend, and simplifies debugging.
+So the UI feels quick, but data still stays correct because backend controls final cart state.
 
 ### 3) What trade-offs did you make?
 
-- **Monolith architecture (`Next.js` UI + API):** faster delivery and fewer moving parts, but tighter coupling than split services.
-- **Server-sync cart updates over optimistic conflict handling:** simpler and safer consistency model, with slightly higher API round-trip dependency.
-- **Simulated payment fallback:** excellent developer/test ergonomics, but not a replacement for full production payment workflows.
-- **Pragmatic validation scope:** focused on core correctness and API safety rather than full enterprise-level validation rules.
-
+- A **Next.js monolith** was used (frontend + API in one app).  
+  It is faster to build and easier to manage for this task, but less flexible than separate services.
+- **Simple state sync** was used instead of complex optimistic conflict logic.  
+  It is easier to maintain, but depends more on API round-trips.
+- **Simulated payment** was kept as default and Stripe was made optional.  
+  This makes local testing easy, but full production payment flows need more work.
+  
 ### 4) What would you change if this needed to scale to many stores?
 
-- Introduce a **multi-tenant schema** with `storeId` isolation across products, carts, orders, and users.
-- Add **store-scoped RBAC** (admin, manager, cashier) with stricter authorization boundaries.
-- Make checkout **idempotent** and shift payment finalization to **webhook-driven** processing.
-- Add **caching** (e.g., Redis) for hot catalog/cart reads and queue-based async processing for non-critical tasks.
-- Move analytics to dedicated reporting pipelines (materialized views / OLAP tables) to protect transactional workloads.
-- Split the backend into modular services once traffic and team complexity justify operational overhead.
+- Add **multi-store architecture** by introducing `storeId` in all core tables (products, carts, orders, users).
+- Use **PostgreSQL + read replicas** for scale, and **Redis** for hot data like product lists and active cart lookups.
+- Add stronger **RBAC** with clear store-level roles (admin, manager, cashier), plus audit logs for sensitive actions.
+- Make checkout fully reliable using **idempotency keys** + **Stripe webhooks** (`payment_intent.succeeded`, etc.).
+- Move background work (emails, analytics sync, payout tasks) to queues like **BullMQ / SQS**.
+- Improve observability with **Sentry** (errors), **Prometheus + Grafana** (metrics), and centralized logs (ELK/OpenSearch).
+- For analytics at scale, use a reporting pipeline (scheduled ETL to **BigQuery / ClickHouse**) instead of running heavy queries on transactional DB.
+- Production setup would use **Docker**, CI/CD via **GitHub Actions**, and deploy on **AWS / GCP / Vercel** based on traffic profile.
