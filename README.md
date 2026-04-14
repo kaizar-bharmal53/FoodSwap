@@ -1,6 +1,6 @@
 # FoodSwap POS
 
-A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, and `Next.js Route Handlers`.
+A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, `PostgreSQL` and `Next.js Route Handlers`.
 
 ## Features
 
@@ -37,7 +37,6 @@ A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, a
 - Loading, error, and empty states across major pages
 - Role-based behavior in both UI and API
 - Server-side validation and status-specific API errors
-- Stripe fallback to simulated payment when Stripe keys are missing
 - Database health check endpoint (`/api/health/db`)
 
 ## Assessment Checklist
@@ -51,20 +50,12 @@ A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, a
 
 ## Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js 15 
 - TypeScript + React hooks
 - Tailwind CSS
 - Prisma + PostgreSQL
 - Jest testing
-- Stripe (optional)
-
-## Scripts
-
-- `npm run dev` - run development server
-- `npm run build` - build for production
-- `npm run start` - run production build
-- `npm run lint` - lint project
-- `npm test` - run tests
+- Stripe
 
 ## Main API Endpoints
 
@@ -73,7 +64,7 @@ A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, a
 - `POST /api/auth/login`
 - `POST /api/auth/logout`
 - `GET /api/auth/me`
-- `PATCH /api/auth/me` (update name/password)
+- `PATCH /api/auth/me` 
 
 ### Products
 - `GET /api/products`
@@ -139,11 +130,11 @@ prisma/
   schema.prisma
 ```
 
-## Short Answers
+## Answers
 
 ### 1) How did you structure the POS flow (products → cart → checkout → orders)?
 
-The flow is intentionally simple and step-by-step, similar to a real POS:
+The flow is simple and step-by-step:
 
 1. **Products page (`/`)**  
    Products are fetched from `GET /api/products` and shown with name, price, and SKU.  
@@ -177,7 +168,7 @@ So the UI feels quick, but data still stays correct because backend controls fin
   It is faster to build and easier to manage for this task, but less flexible than separate services.
 - **Simple state sync** was used instead of complex optimistic conflict logic.  
   It is easier to maintain, but depends more on API round-trips.
-- **Simulated payment** was kept as default and Stripe was made optional.  
+- **Simulated payment**  Stripe was made optional.  
   This makes local testing easy, but full production payment flows need more work.
   
 ### 4) What would you change if this needed to scale to many stores?
