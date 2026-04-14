@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("customer")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  cart           Cart?
+  orders         Order[]
+  favorites      Favorite[]
+  savedAddresses SavedAddress[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Int
+  sku         String   @unique
+  description String   @default("")
+  category    String   @default("Uncategorized")
+  imageEmoji  String   @default("🍽️") @map("image_emoji")
+  imageUrl    String?  @map("image_url")
+  inStock     Boolean  @default(true) @map("in_stock")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  favorites  Favorite[]
+
+  @@map("products")
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique @map("user_id")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  cartId    String  @map("cart_id")
+  productId String  @map("product_id")
+  quantity  Int
+  note      String?
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  userId          String?   @map("user_id")
+  subtotal        Int
+  tax             Int
+  total           Int
+  discount        Int?
+  promoCode       String?   @map("promo_code")
+  status          String    @default("pending")
+  paymentMethod   String    @map("payment_method")
+  paymentIntentId String?   @map("payment_intent_id")
+  deliveryName    String?   @map("delivery_name")
+  deliveryPhone   String?   @map("delivery_phone")
+  addressLine1    String?   @map("address_line1")
+  addressLine2    String?   @map("address_line2")
+  city            String?
+  emirate         String?
+  scheduledFor    DateTime? @map("scheduled_for")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user  User?       @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String  @map("order_id")
+  productId    String  @map("product_id")
+  productName  String  @map("product_name")
+  productPrice Int     @map("product_price")
+  productSku   String  @map("product_sku")
+  productEmoji String  @default("🍽️") @map("product_emoji")
+  quantity     Int
+  note         String?
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  productId String   @map("product_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("favorites")
+}
+
+model SavedAddress {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  label         String   @default("Home")
+  deliveryName  String   @map("delivery_name")
+  deliveryPhone String   @map("delivery_phone")
+  addressLine1  String   @map("address_line1")
+  addressLine2  String?  @map("address_line2")
+  city          String
+  emirate       String
+  isDefault     Boolean  @default(false) @map("is_default")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_addresses")
+}
+
+model PromoCode {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  type      String
+  value     Int
+  maxUses   Int?      @map("max_uses")
+  usedCount Int       @default(0) @map("used_count")
+  expiresAt DateTime? @map("expires_at")
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("promo_codes")
+}

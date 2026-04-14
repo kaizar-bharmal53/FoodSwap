@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 249 250 251;
+    --surface: 255 255 255;
+    --border: 229 231 235;
+  }
+
+  .dark {
+    --bg: 10 10 15;
+    --surface: 18 18 25;
+    --border: 39 39 50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased font-body;
+    background-color: rgb(var(--bg));
+    color: theme('colors.slate.900');
+  }
+
+  h1, h2, h3 {
+    @apply font-display;
+  }
+
+  .dark body {
+    color: theme('colors.slate.50');
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-600;
+  }
+}
+
+@layer utilities {
+  .surface {
+    background-color: rgb(var(--surface));
+  }
+
+  .border-base {
+    border-color: rgb(var(--border));
+  }
+
+  /* Glass card */
+  .glass {
+    @apply bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-white/50 dark:border-white/10;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent;
+  }
+
+  /* ── Category image area backgrounds ───────────────────────────────────── */
+  /* Subtle two-stop diagonal gradient — clean, not loud                      */
+
+  .cat-bg-wraps    { background: linear-gradient(135deg, #fef3c7 0%, #fde8cc 100%); }
+  .cat-bg-rice     { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); }
+  .cat-bg-mezze    { background: linear-gradient(135deg, #fff7ed 0%, #fde8cc 100%); }
+  .cat-bg-snacks   { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
+  .cat-bg-breads   { background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+  .cat-bg-grills   { background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); }
+  .cat-bg-bowls    { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+  .cat-bg-salads   { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+  .cat-bg-desserts { background: linear-gradient(135deg, #fff0f8 0%, #fce7f3 100%); }
+  .cat-bg-drinks   { background: linear-gradient(135deg, #f0fdff 0%, #ecfeff 100%); }
+  .cat-bg-default  { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
+
+  .dark .cat-bg-wraps    { background: linear-gradient(135deg, #1c1208 0%, #201508 100%); }
+  .dark .cat-bg-rice     { background: linear-gradient(135deg, #161208 0%, #1c1508 100%); }
+  .dark .cat-bg-mezze    { background: linear-gradient(135deg, #1a1005 0%, #1f1308 100%); }
+  .dark .cat-bg-snacks   { background: linear-gradient(135deg, #181206 0%, #1c1508 100%); }
+  .dark .cat-bg-breads   { background: linear-gradient(135deg, #071208 0%, #081509 100%); }
+  .dark .cat-bg-grills   { background: linear-gradient(135deg, #180607 0%, #1c0809 100%); }
+  .dark .cat-bg-bowls    { background: linear-gradient(135deg, #1a0e06 0%, #1e1108 100%); }
+  .dark .cat-bg-salads   { background: linear-gradient(135deg, #061008 0%, #08130a 100%); }
+  .dark .cat-bg-desserts { background: linear-gradient(135deg, #180510 0%, #1c0814 100%); }
+  .dark .cat-bg-drinks   { background: linear-gradient(135deg, #051214 0%, #071618 100%); }
+  .dark .cat-bg-default  { background: linear-gradient(135deg, #0d1117 0%, #111827 100%); }
+}
