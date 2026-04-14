@@ -95,3 +95,31 @@
   .dark .cat-bg-drinks   { background: linear-gradient(135deg, #051214 0%, #071618 100%); }
   .dark .cat-bg-default  { background: linear-gradient(135deg, #0d1117 0%, #111827 100%); }
 }
+
+/* ── Image shimmer loading animation ───────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.img-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(148,163,184,0.15) 25%,
+    rgba(148,163,184,0.35) 50%,
+    rgba(148,163,184,0.15) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.dark .img-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}

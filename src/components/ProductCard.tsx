@@ -22,6 +22,7 @@ export default function ProductCard({ product, onAddToCart, isAdmin = false }: P
   const [added, setAdded] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const { user, favorites, toggleFavorite } = useAuth();
   const isFav = favorites.includes(product.id);
 
@@ -90,14 +91,21 @@ export default function ProductCard({ product, onAddToCart, isAdmin = false }: P
         {/* Photo area */}
         <div className="relative overflow-hidden bg-slate-100 dark:bg-white/[0.04]" style={{ aspectRatio: "4/3" }}>
           {showPhoto ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              onError={() => setImgError(true)}
-            />
+            <>
+              {/* Shimmer shown until image fully loads */}
+              {!imgLoaded && (
+                <div className="absolute inset-0 img-shimmer" />
+              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                loading="lazy"
+                className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-[1.03] ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setImgLoaded(true)}
+                onError={() => setImgError(true)}
+              />
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-5xl drop-shadow-sm select-none" role="img" aria-label={product.name}>

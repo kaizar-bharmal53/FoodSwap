@@ -32,6 +32,7 @@ export default function FoodDetailModal({ product, onClose, onAddToCart, isAdmin
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
   const [note, setNote] = useState("");
+  const [heroLoaded, setHeroLoaded] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,14 +79,20 @@ export default function FoodDetailModal({ product, onClose, onAddToCart, isAdmin
         </button>
 
         {/* Hero image */}
-        <div className={`relative h-52 overflow-hidden ${!product.imageUrl ? bg : ""}`}>
+        <div className={`relative h-52 overflow-hidden ${!product.imageUrl ? bg : "bg-slate-100 dark:bg-white/[0.04]"}`}>
           {product.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <>
+              {!heroLoaded && (
+                <div className="absolute inset-0 img-shimmer" />
+              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${heroLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setHeroLoaded(true)}
+              />
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-[80px] drop-shadow-md select-none" role="img" aria-label={product.name}>

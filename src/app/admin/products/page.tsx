@@ -141,8 +141,20 @@ export default function AdminProductsPage() {
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
                         {p.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={p.imageUrl} alt={p.name} className="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-slate-200 dark:border-white/[0.08]" />
+                          <div className="relative w-9 h-9 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.04]">
+                            <div className="absolute inset-0 img-shimmer" id={`shimmer-${p.id}`} />
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+                              onLoad={(e) => {
+                                (e.currentTarget as HTMLImageElement).classList.replace("opacity-0", "opacity-100");
+                                const shimmer = document.getElementById(`shimmer-${p.id}`);
+                                if (shimmer) shimmer.style.display = "none";
+                              }}
+                            />
+                          </div>
                         ) : (
                           <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-lg flex-shrink-0 border border-slate-200 dark:border-white/[0.08]">
                             {p.imageEmoji}
