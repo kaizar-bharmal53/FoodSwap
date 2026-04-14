@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, MapPin, RotateCcw, Clock, Tag } from "lucide-react";
+import { ChevronDown, MapPin, RotateCcw, Clock, Tag, UtensilsCrossed } from "lucide-react";
 import type { Order, OrderStatus } from "@/lib/types";
 import { formatCents, formatDate } from "@/lib/utils";
 import Badge from "./ui/Badge";
@@ -79,7 +79,20 @@ export default function OrderCard({ order, onRefund }: OrderCardProps) {
             {order.items.map((item) => (
               <div key={item.productId}>
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <span className="text-lg w-7 text-center leading-none flex-shrink-0">{item.product.imageEmoji}</span>
+                  <div className="relative w-7 h-7 rounded-md flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+                    {item.product.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={item.product.imageUrl}
+                        alt={item.product.name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <UtensilsCrossed size={12} className="text-slate-300 dark:text-slate-600" />
+                      </div>
+                    )}
+                  </div>
                   <span className="flex-1 min-w-0 text-[13px] text-slate-700 dark:text-slate-300 truncate">
                     {item.product.name}
                   </span>

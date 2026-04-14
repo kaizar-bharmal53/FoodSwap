@@ -233,7 +233,16 @@ export default function CheckoutPage() {
                 <div className="space-y-2.5 mb-4">
                   {cart.items.map(item => (
                     <div key={item.productId} className="flex items-center gap-2.5 text-sm">
-                      <span className="text-lg w-7 text-center">{item.product.imageEmoji}</span>
+                      <div className="relative w-7 h-7 rounded-md flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+                        {item.product.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.product.imageUrl} alt={item.product.name} className="absolute inset-0 w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300 dark:text-slate-600"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                          </div>
+                        )}
+                      </div>
                       <span className="flex-1 text-slate-700 dark:text-slate-300 truncate">{item.product.name}</span>
                       {item.note && <span className="text-[10px] italic text-slate-400 hidden sm:block truncate max-w-[100px]">{item.note}</span>}
                       <span className="text-slate-400 text-xs">×{item.quantity}</span>

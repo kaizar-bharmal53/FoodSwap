@@ -260,7 +260,16 @@ export default function CartPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {recommendations.map(product => (
                 <div key={product.id} className="bg-white dark:bg-[#12121a] rounded-xl border border-slate-200 dark:border-white/[0.08] flex items-center gap-3 px-4 py-3">
-                  <span className="text-2xl w-8 text-center flex-shrink-0">{product.imageEmoji}</span>
+                  <div className="relative w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+                    {product.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300 dark:text-slate-600"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-slate-900 dark:text-white truncate">{product.name}</p>
                     <p className="text-[12px] text-slate-400 tabular-nums">{formatCents(product.price)}</p>

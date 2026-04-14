@@ -595,11 +595,20 @@ export default function AccountPage() {
             <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
               {favProducts.map(product => (
                 <div key={product.id} className="bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] rounded-lg p-3 flex flex-col gap-2">
-                  <div className="flex items-start justify-between">
-                    <span className="text-2xl">{product.imageEmoji}</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="relative w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+                      {product.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={product.imageUrl} alt={product.name} className="absolute inset-0 w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300 dark:text-slate-600"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                        </div>
+                      )}
+                    </div>
                     <button
                       onClick={() => toggleFavorite(product.id)}
-                      className="w-6 h-6 flex items-center justify-center text-brand-500 hover:text-brand-600 transition-colors"
+                      className="w-6 h-6 flex items-center justify-center text-brand-500 hover:text-brand-600 transition-colors flex-shrink-0"
                     >
                       <Heart size={13} className="fill-brand-500" />
                     </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus, X, MessageSquare } from "lucide-react";
+import { Minus, Plus, X, MessageSquare, UtensilsCrossed } from "lucide-react";
 import type { CartItem } from "@/lib/types";
 import { formatCents } from "@/lib/utils";
 
@@ -44,9 +44,28 @@ export default function CartItemRow({ item, onUpdateQuantity, onRemove }: CartIt
   return (
     <div className={`py-3.5 transition-opacity ${loading ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-3">
-        {/* Emoji */}
-        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-xl flex-shrink-0 border border-slate-200 dark:border-white/[0.08]">
-          {item.product.imageEmoji}
+        {/* Thumbnail */}
+        <div className="relative w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+          {item.product.imageUrl ? (
+            <>
+              <div className="absolute inset-0 img-shimmer" id={`csh-${item.productId}`} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.product.imageUrl}
+                alt={item.product.name}
+                className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+                onLoad={e => {
+                  (e.currentTarget as HTMLImageElement).classList.replace("opacity-0", "opacity-100");
+                  const s = document.getElementById(`csh-${item.productId}`);
+                  if (s) s.style.display = "none";
+                }}
+              />
+            </>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <UtensilsCrossed size={16} className="text-slate-300 dark:text-slate-600" />
+            </div>
+          )}
         </div>
 
         {/* Info */}

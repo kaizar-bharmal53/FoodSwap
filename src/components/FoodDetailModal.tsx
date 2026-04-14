@@ -94,10 +94,8 @@ export default function FoodDetailModal({ product, onClose, onAddToCart, isAdmin
               />
             </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-[80px] drop-shadow-md select-none" role="img" aria-label={product.name}>
-                {product.imageEmoji}
-              </span>
+            <div className={`w-full h-full flex items-center justify-center ${bg}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300 dark:text-slate-600" aria-label={product.name}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
             </div>
           )}
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white dark:from-[#18181f] to-transparent pointer-events-none" />

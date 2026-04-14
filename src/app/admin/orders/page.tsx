@@ -220,9 +220,19 @@ export default function AdminOrdersPage() {
                       {order.items.map(item => (
                         <div key={item.productId}>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-600 dark:text-slate-300">
-                            {item.product.imageEmoji} {item.product.name}
-                            <span className="text-slate-400 ml-1.5">× {item.quantity}</span>
+                          <span className="flex items-center gap-2 text-slate-600 dark:text-slate-300 min-w-0">
+                            <div className="relative w-6 h-6 rounded flex-shrink-0 overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.06]">
+                              {item.product.imageUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={item.product.imageUrl} alt={item.product.name} className="absolute inset-0 w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-300 dark:text-slate-600"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
+                                </div>
+                              )}
+                            </div>
+                            <span className="truncate">{item.product.name}</span>
+                            <span className="text-slate-400 ml-1.5 flex-shrink-0">× {item.quantity}</span>
                           </span>
                           <span className="font-semibold text-slate-800 dark:text-slate-200 tabular-nums">
                             {formatCents(item.product.price * item.quantity)}
