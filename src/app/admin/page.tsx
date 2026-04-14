@@ -158,7 +158,7 @@ export default function AdminDashboard() {
 
       {/* ── Revenue Chart ─────────────────────────────────────────────── */}
       <div className="bg-white dark:bg-[#12121a] rounded-xl border border-slate-200 dark:border-white/[0.08] overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-4 border-b border-slate-100 dark:border-white/[0.06]">
           <h2 className="text-sm font-bold text-slate-900 dark:text-white">Revenue Over Time</h2>
           <div className="flex items-center border border-slate-200 dark:border-white/[0.1] rounded-lg overflow-hidden text-xs font-semibold">
             {([7, 30, 90] as const).map((d, i) => (
@@ -269,23 +269,23 @@ export default function AdminDashboard() {
             {orders.slice(0, 8).map(order => (
               <div
                 key={order.id}
-                className="flex items-center justify-between px-5 py-3 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
+                className="flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-mono font-bold text-slate-900 dark:text-white">
                     #{order.id.slice(-8).toUpperCase()}
                   </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">
                     {formatDate(order.createdAt)} · {order.items.length} item{order.items.length !== 1 ? "s" : ""}
                     {order.scheduledFor && (
                       <span className="ml-2 text-brand-500 font-medium">
-                        Scheduled {new Date(order.scheduledFor).toLocaleTimeString("en-AE", { hour: "2-digit", minute: "2-digit" })}
+                        Sched. {new Date(order.scheduledFor).toLocaleTimeString("en-AE", { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     )}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <Badge variant={STATUS_BADGE[order.status] ?? "gray"}>{order.status}</Badge>
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <span className="hidden sm:block"><Badge variant={STATUS_BADGE[order.status] ?? "gray"}>{order.status}</Badge></span>
                   <span className="text-sm font-bold text-slate-900 dark:text-white tabular-nums">
                     {formatCents(order.total)}
                   </span>

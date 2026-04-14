@@ -97,8 +97,8 @@ export default function ProductsPage() {
 
 
         {/* Page header */}
-        <div className="flex items-end justify-between mb-5">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+          <div className="flex-1">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Menu</h1>
             {!loading && (
               <p className="text-xs text-slate-400 mt-0.5 font-medium uppercase tracking-wider">
@@ -107,15 +107,15 @@ export default function ProductsPage() {
             )}
           </div>
 
-          {/* Search */}
-          <div className="relative">
+          {/* Search — full width on mobile */}
+          <div className="relative w-full sm:w-48 flex-shrink-0">
             <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-48 pl-8 pr-7 py-1.5 text-sm rounded-md border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#12121a] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 transition-colors"
+              className="w-full pl-8 pr-7 py-1.5 text-sm rounded-md border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-[#12121a] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-400 transition-colors"
             />
             {search && (
               <button
@@ -128,13 +128,13 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Category filter — segmented row */}
-        <div className="flex items-center gap-1 mb-5 flex-wrap">
+        {/* Category filter — scrollable on mobile */}
+        <div className="flex items-center gap-1 mb-5 overflow-x-auto pb-1 flex-nowrap sm:flex-wrap" style={{ scrollbarWidth: "none" }}>
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategory(cat)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors border ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors border flex-shrink-0 whitespace-nowrap ${
                 category === cat
                   ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-white"
                   : "bg-white dark:bg-white/[0.04] text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.14] hover:text-slate-900 dark:hover:text-white"

@@ -93,7 +93,7 @@ export default function AdminProductsPage() {
   return (
     <div className="space-y-5 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Products</h1>
           <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5">
@@ -148,7 +148,7 @@ export default function AdminProductsPage() {
                             {p.imageEmoji}
                           </div>
                         )}
-                        <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[180px]">{p.name}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[120px] sm:max-w-[200px]">{p.name}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">

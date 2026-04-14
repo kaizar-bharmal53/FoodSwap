@@ -390,11 +390,11 @@ export default function CheckoutPage() {
                         <label className="text-xs font-medium text-slate-500">Address Line 2</label>
                         <input value={address.addressLine2} onChange={e => setAddress(a => ({ ...a, addressLine2: e.target.value }))} placeholder="Apartment, floor (optional)" className={inputCls} />
                       </div>
-                      <div className="space-y-1">
+                      <div className="col-span-2 sm:col-span-1 space-y-1">
                         <label className="text-xs font-medium text-slate-500">City *</label>
                         <input value={address.city} onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} placeholder="Dubai" className={inputCls} />
                       </div>
-                      <div className="space-y-1">
+                      <div className="col-span-2 sm:col-span-1 space-y-1">
                         <label className="text-xs font-medium text-slate-500">Emirate *</label>
                         <select value={address.emirate} onChange={e => setAddress(a => ({ ...a, emirate: e.target.value }))} className={inputCls}>
                           <option value="">Select</option>

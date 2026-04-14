@@ -262,27 +262,29 @@ export default function AccountPage() {
 
         {/* ── Profile hero ─────────────────────────────────────────────── */}
         <div className="bg-white dark:bg-[#12121a] border border-slate-200 dark:border-white/[0.08] rounded-xl overflow-hidden">
-          <div className="px-6 py-6 flex items-center gap-5">
-            {/* Avatar */}
-            <div className="w-16 h-16 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 text-xl font-bold flex-shrink-0 select-none">
-              {initials}
-            </div>
+          <div className="px-4 sm:px-6 py-5 sm:py-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            {/* Avatar + info row on mobile */}
+            <div className="flex items-center gap-4 sm:contents">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 text-xl font-bold flex-shrink-0 select-none">
+                {initials}
+              </div>
 
-            {/* Name / email / since */}
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white truncate">{user?.name}</h1>
-              <p className="text-sm text-slate-400 flex items-center gap-1.5 mt-0.5">
-                <Mail size={12} />
-                {user?.email}
-              </p>
-              <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
-                <Calendar size={11} />
-                Member since {memberSince}
-              </p>
+              {/* Name / email / since */}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white truncate">{user?.name}</h1>
+                <p className="text-xs sm:text-sm text-slate-400 flex items-center gap-1.5 mt-0.5 truncate">
+                  <Mail size={12} />
+                  <span className="truncate">{user?.email}</span>
+                </p>
+                <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
+                  <Calendar size={11} />
+                  Member since {memberSince}
+                </p>
+              </div>
             </div>
 
             {/* Actions */}
-            <div className="ml-auto flex flex-col sm:flex-row items-end sm:items-center gap-2 flex-shrink-0">
+            <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:ml-auto flex-shrink-0">
               <Link
                 href="/orders"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
@@ -300,9 +302,9 @@ export default function AccountPage() {
             </div>
           </div>
 
-          {/* Stats bar */}
+          {/* Stats bar — 2 cols on mobile, 4 on sm+ */}
           {!ordersLoading && (
-            <div className="grid grid-cols-4 divide-x divide-slate-100 dark:divide-white/[0.06] border-t border-slate-100 dark:border-white/[0.06]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-slate-100 dark:divide-white/[0.06] border-t border-slate-100 dark:border-white/[0.06]">
               {[
                 { label: "Total Orders",    value: String(orders.length)           },
                 { label: "Completed",        value: String(completed.length)        },

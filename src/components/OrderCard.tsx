@@ -78,13 +78,13 @@ export default function OrderCard({ order, onRefund }: OrderCardProps) {
           <div className="space-y-2.5 mb-4">
             {order.items.map((item) => (
               <div key={item.productId}>
-                <div className="flex items-center gap-3">
-                  <span className="text-lg w-7 text-center leading-none">{item.product.imageEmoji}</span>
-                  <span className="flex-1 text-[13px] text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="text-lg w-7 text-center leading-none flex-shrink-0">{item.product.imageEmoji}</span>
+                  <span className="flex-1 min-w-0 text-[13px] text-slate-700 dark:text-slate-300 truncate">
                     {item.product.name}
                   </span>
-                  <span className="text-[12px] text-slate-400">×{item.quantity}</span>
-                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white tabular-nums">
+                  <span className="text-[12px] text-slate-400 flex-shrink-0">×{item.quantity}</span>
+                  <span className="text-[13px] font-semibold text-slate-900 dark:text-white tabular-nums flex-shrink-0">
                     {formatCents(item.product.price * item.quantity)}
                   </span>
                 </div>

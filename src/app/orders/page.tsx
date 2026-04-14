@@ -106,7 +106,7 @@ function OrdersContent() {
 
       {/* Stats */}
       {!authLoading && user && !loading && !error && orders.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <StatPill label="Total orders" value={String(orders.length)} />
           <StatPill label="Revenue" value={formatCents(totalRevenue)} />
           <StatPill label="Avg order" value={formatCents(avgOrder)} />

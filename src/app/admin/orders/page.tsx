@@ -71,7 +71,7 @@ export default function AdminOrdersPage() {
   return (
     <div className="space-y-5 max-w-5xl">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Orders</h1>
           <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5">
@@ -87,26 +87,33 @@ export default function AdminOrdersPage() {
         </button>
       </div>
 
-      {/* Segmented filter */}
-      <div className="flex items-center border border-slate-200 dark:border-white/[0.1] rounded-lg overflow-hidden bg-white dark:bg-white/[0.02] w-fit">
-        {statusFilters.map(({ label, value }, idx) => (
-          <button
-            key={value}
-            onClick={() => setFilter(value)}
-            className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold transition-colors ${idx < statusFilters.length - 1 ? "border-r border-slate-200 dark:border-white/[0.1]" : ""} ${
-              filter === value
-                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
-                : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            {label}
-            {value !== "all" && (
-              <span className={`text-[10px] font-bold min-w-[16px] text-center ${filter === value ? "opacity-70" : "text-slate-400"}`}>
-                {orders.filter(o => o.status === value).length}
-              </span>
-            )}
-          </button>
-        ))}
+      {/* Segmented filter — horizontal scroll on mobile */}
+      <div className="w-full overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
+        <div className="flex items-center border border-slate-200 dark:border-white/[0.1] rounded-lg overflow-hidden bg-white dark:bg-white/[0.02] w-max min-w-full sm:w-fit sm:min-w-0">
+          {statusFilters.map(({ label, value }, idx) => (
+            <button
+              key={value}
+              onClick={() => setFilter(value)}
+              className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-2 text-xs font-semibold transition-colors whitespace-nowrap ${idx < statusFilters.length - 1 ? "border-r border-slate-200 dark:border-white/[0.1]" : ""} ${
+                filter === value
+                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900"
+                  : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/[0.05] hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              {label}
+              {value !== "all" && value !== "scheduled" && (
+                <span className={`text-[10px] font-bold min-w-[16px] text-center ${filter === value ? "opacity-70" : "text-slate-400"}`}>
+                  {orders.filter(o => o.status === value).length}
+                </span>
+              )}
+              {value === "scheduled" && (
+                <span className={`text-[10px] font-bold min-w-[16px] text-center ${filter === value ? "opacity-70" : "text-slate-400"}`}>
+                  {orders.filter(o => !!o.scheduledFor).length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Orders list */}

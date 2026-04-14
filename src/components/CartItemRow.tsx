@@ -80,10 +80,10 @@ export default function CartItemRow({ item, onUpdateQuantity, onRemove }: CartIt
           </button>
         </div>
 
-        {/* Line total */}
-        <span className="w-16 text-right text-sm font-bold text-slate-900 dark:text-white tabular-nums">
-          {formatCents(item.product.price * item.quantity)}
-        </span>
+      {/* Line total */}
+      <span className="w-14 sm:w-16 text-right text-xs sm:text-sm font-bold text-slate-900 dark:text-white tabular-nums flex-shrink-0">
+        {formatCents(item.product.price * item.quantity)}
+      </span>
 
         {/* Remove */}
         <button
@@ -97,7 +97,7 @@ export default function CartItemRow({ item, onUpdateQuantity, onRemove }: CartIt
       </div>
 
       {/* Note row */}
-      <div className="ml-13 pl-[52px] mt-1.5">
+      <div className="pl-[52px] mt-1.5">
         {!showNote ? (
           <button
             onClick={() => setShowNote(true)}

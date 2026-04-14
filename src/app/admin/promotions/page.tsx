@@ -85,7 +85,7 @@ export default function PromotionsPage() {
 
   return (
     <div className="space-y-5 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Promotions</h1>
           <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5">Manage discount codes</p>
@@ -105,12 +105,12 @@ export default function PromotionsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.02]">
-                <th className="text-left px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Code</th>
-                <th className="text-left px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Discount</th>
-                <th className="text-left px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Uses</th>
-                <th className="text-left px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expires</th>
-                <th className="text-left px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-5 py-3" />
+                <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Code</th>
+                <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Discount</th>
+                <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:table-cell">Uses</th>
+                <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:table-cell">Expires</th>
+                <th className="text-left px-4 sm:px-5 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                <th className="px-4 sm:px-5 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-white/[0.05]">
@@ -132,25 +132,25 @@ export default function PromotionsPage() {
               ) : (
                 promos.map(promo => (
                   <tr key={promo.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
-                    <td className="px-5 py-3">
-                      <span className="font-mono font-bold text-slate-900 dark:text-white tracking-wider">{promo.code}</span>
+                    <td className="px-4 sm:px-5 py-3">
+                      <span className="font-mono font-bold text-slate-900 dark:text-white tracking-wider text-xs sm:text-sm">{promo.code}</span>
                     </td>
-                    <td className="px-5 py-3 text-slate-700 dark:text-slate-300">{formatValue(promo)}</td>
-                    <td className="px-5 py-3 text-slate-500 dark:text-slate-400 tabular-nums">
+                    <td className="px-4 sm:px-5 py-3 text-slate-700 dark:text-slate-300 text-xs sm:text-sm">{formatValue(promo)}</td>
+                    <td className="px-4 sm:px-5 py-3 text-slate-500 dark:text-slate-400 tabular-nums hidden sm:table-cell">
                       {promo.usedCount}{promo.maxUses !== undefined ? ` / ${promo.maxUses}` : ""}
                     </td>
-                    <td className="px-5 py-3 text-slate-500 dark:text-slate-400">
+                    <td className="px-4 sm:px-5 py-3 text-slate-500 dark:text-slate-400 text-xs hidden md:table-cell">
                       {promo.expiresAt ? formatDate(promo.expiresAt) : "—"}
                     </td>
-                    <td className="px-5 py-3">
-                      <button onClick={() => handleToggle(promo)} className="flex items-center gap-1.5 text-xs font-semibold transition-colors">
+                    <td className="px-4 sm:px-5 py-3">
+                      <button onClick={() => handleToggle(promo)} className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold transition-colors">
                         {promo.active
-                          ? <><ToggleRight size={18} className="text-brand-500" /><span className="text-brand-600 dark:text-brand-400">Active</span></>
-                          : <><ToggleLeft size={18} className="text-slate-300 dark:text-slate-600" /><span className="text-slate-400">Inactive</span></>
+                          ? <><ToggleRight size={18} className="text-brand-500" /><span className="hidden sm:inline text-brand-600 dark:text-brand-400">Active</span></>
+                          : <><ToggleLeft size={18} className="text-slate-300 dark:text-slate-600" /><span className="hidden sm:inline text-slate-400">Inactive</span></>
                         }
                       </button>
                     </td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-4 sm:px-5 py-3 text-right">
                       <button
                         onClick={() => handleDelete(promo.id)}
                         className="p-1.5 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
