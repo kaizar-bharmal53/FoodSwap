@@ -23,6 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* Apply saved theme before first paint to avoid flash */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}})();` }} />
+      </head>
       {/* font-body falls back to system Arial; --font-display powers headings */}
       <body className={`${playfair.variable} font-body`} suppressHydrationWarning>
         <AuthProvider>
