@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest --watchAll=false",
-    "test:watch": "jest",
-    "seed": "NODE_TLS_REJECT_UNAUTHORIZED=0 npx tsx prisma/seed.ts"
+    "test:watch": "jest"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.7.0",
