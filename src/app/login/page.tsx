@@ -100,6 +100,20 @@ function LoginForm() {
   );
 }
 
+function LoginFooter() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") ?? "/";
+  const registerHref = from !== "/" ? `/register?from=${encodeURIComponent(from)}` : "/register";
+  return (
+    <p className="text-center text-sm text-slate-400 mt-5">
+      Don&apos;t have an account?{" "}
+      <Link href={registerHref} className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">
+        Create one
+      </Link>
+    </p>
+  );
+}
+
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-slate-50 dark:bg-[#0a0a0f]">
@@ -124,12 +138,14 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-slate-400 mt-5">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">
-            Create one
-          </Link>
-        </p>
+        <Suspense fallback={
+          <p className="text-center text-sm text-slate-400 mt-5">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-semibold text-brand-500 hover:text-brand-600 transition-colors">Create one</Link>
+          </p>
+        }>
+          <LoginFooter />
+        </Suspense>
       </div>
     </div>
   );

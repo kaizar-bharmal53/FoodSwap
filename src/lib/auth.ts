@@ -9,6 +9,10 @@ const JWT_SECRET_RAW = process.env.JWT_SECRET ?? "dev-secret-change-in-productio
 const secret = new TextEncoder().encode(JWT_SECRET_RAW);
 export const COOKIE_NAME = "pos_session";
 
+/** HttpOnly cookie storing guest cart id (UUID); cleared on login after merge. */
+export const GUEST_CART_COOKIE = "guest_cart_id";
+export const GUEST_CART_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
+
 // ─── User operations ──────────────────────────────────────────────────────────
 
 export async function createUser(

@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addItemToCart } from "@/lib/store";
+import { addItemToCart, addItemToGuestCart, createGuestCart } from "@/lib/store";
 import { getSession } from "@/lib/session";
 import type { AddToCartBody } from "@/lib/types";
+import { getGuestCartIdFromRequest, setGuestCartCookie } from "@/lib/guest-cart-cookie";
 
 export async function POST(req: NextRequest) {
-  const session = await getSession(req);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   let body: Partial<AddToCartBody>;
   try {
     body = await req.json();
@@ -25,7 +23,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const cart = await addItemToCart(session.sub, productId, quantity, note);
+    const session = await getSession(req);
+    if (session) {
+      const cart = await addItemToCart(session.sub, productId, quantity, note);
+      if (!cart) {
+        return NextResponse.json(
+          { error: "Product not found or out of stock" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ data: cart }, { status: 201 });
+    }
+
+    let guestId = getGuestCartIdFromRequest(req);
+    if (!guestId) {
+      const created = await createGuestCart();
+      guestId = created.id;
+    }
+
+    const cart = await addItemToGuestCart(guestId, productId, quantity, note);
     if (!cart) {
       return NextResponse.json(
         { error: "Product not found or out of stock" },
@@ -33,7 +49,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ data: cart }, { status: 201 });
+    const res = NextResponse.json({ data: cart }, { status: 201 });
+    setGuestCartCookie(res, guestId);
+    return res;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to update cart";
     return NextResponse.json({ error: message }, { status: 503 });

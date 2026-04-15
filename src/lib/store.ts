@@ -250,6 +250,128 @@ export async function clearCart(userId: string): Promise<Cart> {
   return getCart(userId);
 }
 
+/** Guest carts have `userId: null` and are keyed by cart id (cookie). */
+export async function createGuestCart(): Promise<Cart> {
+  const row = await db.cart.create({ data: { userId: null }, include: INCLUDE_ITEMS });
+  return toCart(row);
+}
+
+export async function getGuestCart(guestCartId: string): Promise<Cart | null> {
+  const row = await db.cart.findFirst({
+    where: { id: guestCartId, userId: null },
+    include: INCLUDE_ITEMS,
+  });
+  return row ? toCart(row) : null;
+}
+
+export async function addItemToGuestCart(
+  guestCartId: string,
+  productId: string,
+  quantity: number,
+  note?: string
+): Promise<Cart | null> {
+  const cart = await db.cart.findFirst({ where: { id: guestCartId, userId: null } });
+  if (!cart) return null;
+
+  const product = await db.product.findUnique({ where: { id: productId } });
+  if (!product || !product.inStock) return null;
+
+  await db.cartItem.upsert({
+    where: { cartId_productId: { cartId: cart.id, productId } },
+    create: { cartId: cart.id, productId, quantity, note: note ?? null },
+    update: { quantity: { increment: quantity }, ...(note !== undefined ? { note } : {}) },
+  });
+
+  await db.cart.update({ where: { id: cart.id }, data: {} });
+  return getGuestCart(guestCartId);
+}
+
+export async function updateGuestCartItemQuantity(
+  guestCartId: string,
+  productId: string,
+  quantity: number,
+  note?: string
+): Promise<Cart | null> {
+  const cart = await db.cart.findFirst({ where: { id: guestCartId, userId: null } });
+  if (!cart) return null;
+
+  const item = await db.cartItem.findUnique({
+    where: { cartId_productId: { cartId: cart.id, productId } },
+  });
+  if (!item) return null;
+
+  if (quantity <= 0) {
+    await db.cartItem.delete({
+      where: { cartId_productId: { cartId: cart.id, productId } },
+    });
+  } else {
+    await db.cartItem.update({
+      where: { cartId_productId: { cartId: cart.id, productId } },
+      data: { quantity, ...(note !== undefined ? { note } : {}) },
+    });
+  }
+
+  await db.cart.update({ where: { id: cart.id }, data: {} });
+  return getGuestCart(guestCartId);
+}
+
+export async function removeItemFromGuestCart(
+  guestCartId: string,
+  productId: string
+): Promise<Cart | null> {
+  const cart = await db.cart.findFirst({ where: { id: guestCartId, userId: null } });
+  if (!cart) return null;
+
+  await db.cartItem.deleteMany({ where: { cartId: cart.id, productId } });
+  await db.cart.update({ where: { id: cart.id }, data: {} });
+  return getGuestCart(guestCartId);
+}
+
+export async function clearGuestCart(guestCartId: string): Promise<Cart | null> {
+  const cart = await db.cart.findFirst({ where: { id: guestCartId, userId: null } });
+  if (!cart) return null;
+
+  await db.cartItem.deleteMany({ where: { cartId: cart.id } });
+  await db.cart.update({ where: { id: cart.id }, data: {} });
+  return getGuestCart(guestCartId);
+}
+
+/** Moves all lines from a guest cart into the user's cart, then deletes the guest cart. */
+export async function mergeGuestCartIntoUser(guestCartId: string, userId: string): Promise<void> {
+  const guest = await db.cart.findFirst({
+    where: { id: guestCartId, userId: null },
+    include: { items: true },
+  });
+  if (!guest) return;
+
+  if (guest.items.length === 0) {
+    await db.cart.delete({ where: { id: guest.id } }).catch(() => {});
+    return;
+  }
+
+  const userCart = await getOrCreateCart(userId);
+
+  await db.$transaction(async (tx) => {
+    for (const item of guest.items) {
+      await tx.cartItem.upsert({
+        where: { cartId_productId: { cartId: userCart.id, productId: item.productId } },
+        create: {
+          cartId: userCart.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          note: item.note ?? null,
+        },
+        update: {
+          quantity: { increment: item.quantity },
+        },
+      });
+    }
+    await tx.cart.delete({ where: { id: guest.id } });
+  });
+
+  await db.cart.update({ where: { id: userCart.id }, data: {} });
+}
+
 // ─── Order Operations ─────────────────────────────────────────────────────────
 
 const TAX_RATE = 0.05; // 5% UAE VAT

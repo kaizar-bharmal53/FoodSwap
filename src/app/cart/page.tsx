@@ -56,7 +56,6 @@ export default function CartPage() {
   }, []);
 
   const handleAddRecommendation = async (productId: string) => {
-    if (!user) { router.push("/login?from=/cart"); return; }
     setAddingRec(productId);
     try {
       const res = await fetch("/api/cart/items", {
@@ -199,7 +198,7 @@ export default function CartPage() {
                           </Button>
                         </Link>
                       </div>
-                      <Link href="/register" className="block">
+                      <Link href="/register?from=/checkout" className="block">
                         <Button variant="ghost" size="md" className="w-full text-slate-400 text-xs">
                           No account? Create one free
                         </Button>

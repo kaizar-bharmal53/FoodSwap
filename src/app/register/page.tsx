@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/Button";
 import FoodSwapLogo from "@/components/FoodSwapLogo";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const { register, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const from = searchParams.get("from") ?? "/";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,8 +22,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) router.replace("/");
-  }, [user, router]);
+    if (user) router.replace(from);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +35,7 @@ export default function RegisterPage() {
       setError(err);
       setLoading(false);
     } else {
-      router.replace("/");
+      router.replace(from);
     }
   };
 
@@ -145,5 +148,13 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 dark:bg-[#0a0a0f]" />}>
+      <RegisterForm />
+    </Suspense>
   );
 }
