@@ -1,5 +1,5 @@
 # FoodSwap POS
-https://king-prawn-app-5833a.ondigitalocean.app/
+Live Demo: https://king-prawn-app-5833a.ondigitalocean.app/
 
 A simplified Point-of-Sale web application built with `Next.js`, `TypeScript`, `PostgreSQL` and `Next.js Route Handlers`.
 
