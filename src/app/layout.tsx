@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
@@ -23,17 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      {/* Apply saved theme before first paint to avoid flash */}
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}})();` }} />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wbw9nhpu25");`,
-          }}
-        />
-      </head>
-      {/* font-body falls back to system Arial; --font-display powers headings */}
       <body className={`${playfair.variable} font-body`} suppressHydrationWarning>
+        {/* Apply saved theme before first paint — prevents light/dark flash */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`}
+        </Script>
+
+        {/* Microsoft Clarity */}
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","wbw9nhpu25");`}
+        </Script>
+
         <AuthProvider>
           {children}
         </AuthProvider>
