@@ -13,8 +13,7 @@ import Button from "@/components/ui/Button";
 import { formatCents } from "@/lib/utils";
 import StripeCheckoutForm from "@/components/StripeCheckoutForm";
 import { useAuth } from "@/context/AuthContext";
-
-const TAX_RATE = 0.05;
+import { TAX_RATE } from "@/lib/constants";
 
 const EMIRATES = [
   "Abu Dhabi", "Dubai", "Sharjah", "Ajman",
@@ -495,7 +494,6 @@ export default function CheckoutPage() {
                       onSuccess={handleSuccess}
                       address={address}
                       promoCode={promoApplied?.code}
-                      discount={discount}
                       scheduledFor={scheduledFor}
                       saveAddress={saveAddress}
                     />
@@ -504,7 +502,6 @@ export default function CheckoutPage() {
                       onSuccess={handleSuccess}
                       address={address}
                       promoCode={promoApplied?.code}
-                      discount={discount}
                       scheduledFor={scheduledFor}
                       saveAddress={saveAddress}
                     />
@@ -520,12 +517,11 @@ export default function CheckoutPage() {
 }
 
 function SimulatedPaymentForm({
-  onSuccess, address, promoCode, discount, scheduledFor, saveAddress,
+  onSuccess, address, promoCode, scheduledFor, saveAddress,
 }: {
   onSuccess: () => void;
   address: Partial<DeliveryAddress>;
   promoCode?: string;
-  discount?: number;
   scheduledFor?: string;
   saveAddress?: boolean;
 }) {
@@ -539,7 +535,7 @@ function SimulatedPaymentForm({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentMethod: "simulated", ...address, promoCode, discount, scheduledFor, saveAddress }),
+        body: JSON.stringify({ paymentMethod: "simulated", ...address, promoCode, scheduledFor, saveAddress }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);

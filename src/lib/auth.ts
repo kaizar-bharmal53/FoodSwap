@@ -2,16 +2,33 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import type { JwtPayload, User, UserRole } from "./types";
 import { db } from "./db";
+import { COOKIE_NAME, SESSION_MAX_AGE_SEC, JWT_ISSUER, JWT_AUDIENCE } from "./constants";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const JWT_SECRET_RAW = process.env.JWT_SECRET ?? "dev-secret-change-in-production";
-const secret = new TextEncoder().encode(JWT_SECRET_RAW);
-export const COOKIE_NAME = "pos_session";
+// Re-export so existing importers of COOKIE_NAME from this module keep working.
+export { COOKIE_NAME, SESSION_MAX_AGE_SEC };
 
 /** HttpOnly cookie storing guest cart id (UUID); cleared on login after merge. */
 export const GUEST_CART_COOKIE = "guest_cart_id";
 export const GUEST_CART_MAX_AGE_SEC = 60 * 60 * 24 * 30; // 30 days
+
+function buildSecret(): Uint8Array {
+  const raw = process.env.JWT_SECRET;
+  if (!raw) {
+    throw new Error(
+      "JWT_SECRET environment variable is not set. Generate one with: openssl rand -base64 48"
+    );
+  }
+  if (raw.length < 32) {
+    throw new Error(
+      `JWT_SECRET is too short (${raw.length} chars). Minimum is 32 characters.`
+    );
+  }
+  return new TextEncoder().encode(raw);
+}
+
+const secret = buildSecret();
 
 // ─── User operations ──────────────────────────────────────────────────────────
 
@@ -76,6 +93,8 @@ export async function signToken(user: User): Promise<string> {
   return new SignJWT({ email: user.email, role: user.role })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
+    .setIssuer(JWT_ISSUER)
+    .setAudience(JWT_AUDIENCE)
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(secret);
@@ -83,7 +102,10 @@ export async function signToken(user: User): Promise<string> {
 
 export async function verifyToken(token: string): Promise<JwtPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret, {
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    });
     return payload as unknown as JwtPayload;
   } catch {
     return null;
@@ -93,10 +115,11 @@ export async function verifyToken(token: string): Promise<JwtPayload | null> {
 // ─── Cookie helpers ───────────────────────────────────────────────────────────
 
 export function makeSessionCookie(token: string): string {
-  const maxAge = 60 * 60 * 24 * 7; // 7 days in seconds
-  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`;
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return `${COOKIE_NAME}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_MAX_AGE_SEC}${secure}`;
 }
 
 export function clearSessionCookie(): string {
-  return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
 }

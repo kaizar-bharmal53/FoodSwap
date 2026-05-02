@@ -84,13 +84,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
     );
     try {
-      await fetch("/api/favorites", {
+      const res = await fetch("/api/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
+      // Revert on any HTTP error (not just network errors)
+      if (!res.ok) {
+        setFavorites(prev =>
+          prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
+        );
+      }
     } catch {
-      // Revert on failure
+      // Revert on network failure
       setFavorites(prev =>
         prev.includes(productId) ? prev.filter(id => id !== productId) : [...prev, productId]
       );

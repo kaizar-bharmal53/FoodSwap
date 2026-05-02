@@ -10,8 +10,7 @@ import Header from "@/components/Header";
 import Button from "@/components/ui/Button";
 import { formatCents } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-
-const TAX_RATE = 0.05;
+import { TAX_RATE } from "@/lib/constants";
 
 export default function CartPage() {
   const router = useRouter();

@@ -9,8 +9,21 @@ export async function PATCH(
   const session = await getSession(req);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
-  let body: Record<string, unknown>;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  let raw: Record<string, unknown>;
+  try { raw = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+
+  // Explicit allowlist — never pass an unfiltered body to the data layer.
+  const body = {
+    ...(raw.label         !== undefined ? { label:         raw.label         } : {}),
+    ...(raw.deliveryName  !== undefined ? { deliveryName:  raw.deliveryName  } : {}),
+    ...(raw.deliveryPhone !== undefined ? { deliveryPhone: raw.deliveryPhone } : {}),
+    ...(raw.addressLine1  !== undefined ? { addressLine1:  raw.addressLine1  } : {}),
+    ...(raw.addressLine2  !== undefined ? { addressLine2:  raw.addressLine2  } : {}),
+    ...(raw.city          !== undefined ? { city:          raw.city          } : {}),
+    ...(raw.emirate       !== undefined ? { emirate:       raw.emirate       } : {}),
+    ...(raw.isDefault     !== undefined ? { isDefault:     raw.isDefault     } : {}),
+  };
+
   try {
     const data = await updateSavedAddress(id, session.sub, body);
     if (!data) return NextResponse.json({ error: "Not found" }, { status: 404 });

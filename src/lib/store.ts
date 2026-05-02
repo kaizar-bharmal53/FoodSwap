@@ -374,7 +374,7 @@ export async function mergeGuestCartIntoUser(guestCartId: string, userId: string
 
 // ─── Order Operations ─────────────────────────────────────────────────────────
 
-const TAX_RATE = 0.05; // 5% UAE VAT
+import { TAX_RATE } from "./constants";
 
 export async function createOrder(
   userId: string,

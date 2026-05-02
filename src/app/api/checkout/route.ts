@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createOrder, getCart, createSavedAddress } from "@/lib/store";
+import { createOrder, getCart, createSavedAddress, validatePromoCode } from "@/lib/store";
 import { getSession } from "@/lib/session";
 import type { CheckoutBody } from "@/lib/types";
 import Stripe from "stripe";
+import { TAX_RATE } from "@/lib/constants";
+
 
 export async function POST(req: NextRequest) {
   const session = await getSession(req);
@@ -25,7 +27,6 @@ export async function POST(req: NextRequest) {
     city,
     emirate,
     promoCode,
-    discount,
     scheduledFor,
     saveAddress,
   } = body;
@@ -40,6 +41,20 @@ export async function POST(req: NextRequest) {
   const cart = await getCart(session.sub);
   if (cart.items.length === 0) {
     return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+  }
+
+  // Re-validate promo code server-side and compute discount from DB — never trust the client's discount value.
+  let serverDiscount = 0;
+  if (promoCode) {
+    const promoResult = await validatePromoCode(promoCode);
+    if (!promoResult.valid) {
+      return NextResponse.json({ error: `Promo code invalid: ${promoResult.reason}` }, { status: 400 });
+    }
+    const subtotal = cart.items.reduce((s, i) => s + i.product.price * i.quantity, 0);
+    serverDiscount =
+      promoResult.promo.type === "percent"
+        ? Math.round(subtotal * promoResult.promo.value / 100)
+        : promoResult.promo.value;
   }
 
   // ── Stripe payment verification ──────────────────────────────────────────────
@@ -69,6 +84,17 @@ export async function POST(req: NextRequest) {
           { status: 402 }
         );
       }
+
+      // Ensure the PaymentIntent was created by this user and for the correct cart total.
+      if (intent.metadata?.userId !== session.sub) {
+        return NextResponse.json({ error: "Payment intent does not belong to this user" }, { status: 403 });
+      }
+      const subtotal = cart.items.reduce((s, i) => s + i.product.price * i.quantity, 0);
+      const tax = Math.round(subtotal * TAX_RATE);
+      const expectedTotal = Math.max(0, subtotal + tax - serverDiscount);
+      if (intent.amount !== expectedTotal) {
+        return NextResponse.json({ error: "Payment amount does not match order total" }, { status: 402 });
+      }
     } catch (err) {
       console.error("Stripe error:", err);
       return NextResponse.json(
@@ -95,7 +121,7 @@ export async function POST(req: NextRequest) {
     { deliveryName, deliveryPhone, addressLine1, addressLine2, city, emirate },
     paymentIntentId,
     promoCode,
-    discount,
+    serverDiscount,
     scheduledFor ? new Date(scheduledFor) : undefined
   );
 
@@ -128,7 +154,7 @@ export async function PUT(req: NextRequest) {
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const tax = Math.round(subtotal * 0.05);
+  const tax = Math.round(subtotal * TAX_RATE);
   const total = subtotal + tax;
 
   try {
@@ -137,6 +163,8 @@ export async function PUT(req: NextRequest) {
       amount: total,
       currency: "aed",
       automatic_payment_methods: { enabled: true },
+      // Bind the intent to this user so we can verify ownership at confirmation time.
+      metadata: { userId: session.sub },
     });
     return NextResponse.json({ data: { clientSecret: intent.client_secret } });
   } catch (err) {

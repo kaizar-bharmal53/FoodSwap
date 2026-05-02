@@ -11,6 +11,7 @@ export function setGuestCartCookie(res: NextResponse, cartId: string): void {
     sameSite: "lax",
     path: "/",
     maxAge: GUEST_CART_MAX_AGE_SEC,
+    secure: process.env.NODE_ENV === "production",
   });
 }
 
@@ -20,5 +21,6 @@ export function clearGuestCartCookie(res: NextResponse): void {
     sameSite: "lax",
     path: "/",
     maxAge: 0,
+    secure: process.env.NODE_ENV === "production",
   });
 }

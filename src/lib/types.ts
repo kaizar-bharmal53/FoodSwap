@@ -80,7 +80,6 @@ export interface CheckoutBody extends Partial<DeliveryAddress> {
   paymentMethod: "stripe" | "simulated";
   paymentIntentId?: string;
   promoCode?: string;
-  discount?: number;
   scheduledFor?: string; // ISO string
   saveAddress?: boolean;
 }

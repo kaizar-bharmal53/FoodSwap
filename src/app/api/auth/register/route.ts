@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createUser, signToken, COOKIE_NAME } from "@/lib/auth";
 import { mergeGuestCartIntoUser } from "@/lib/store";
 import { clearGuestCartCookie, getGuestCartIdFromRequest } from "@/lib/guest-cart-cookie";
-
-const SESSION_MAX_AGE_SEC = 60 * 60 * 24 * 7;
+import { SESSION_MAX_AGE_SEC } from "@/lib/constants";
 
 export async function POST(req: NextRequest) {
   let body: { name?: string; email?: string; password?: string };
@@ -58,6 +57,7 @@ export async function POST(req: NextRequest) {
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_MAX_AGE_SEC,
+    secure: process.env.NODE_ENV === "production",
   });
   clearGuestCartCookie(res);
   return res;

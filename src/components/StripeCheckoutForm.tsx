@@ -19,12 +19,11 @@ interface FormProps {
   onSuccess: () => void;
   address: Partial<DeliveryAddress>;
   promoCode?: string;
-  discount?: number;
   scheduledFor?: string;
   saveAddress?: boolean;
 }
 
-function InnerForm({ onSuccess, address, promoCode, discount, scheduledFor, saveAddress }: FormProps) {
+function InnerForm({ onSuccess, address, promoCode, scheduledFor, saveAddress }: FormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -57,7 +56,6 @@ function InnerForm({ onSuccess, address, promoCode, discount, scheduledFor, save
           paymentIntentId: paymentIntent.id,
           ...address,
           promoCode,
-          discount,
           scheduledFor,
           saveAddress,
         }),
@@ -94,17 +92,16 @@ interface StripeCheckoutFormProps {
   onSuccess: () => void;
   address: Partial<DeliveryAddress>;
   promoCode?: string;
-  discount?: number;
   scheduledFor?: string;
   saveAddress?: boolean;
 }
 
-export default function StripeCheckoutForm({ clientSecret, onSuccess, address, promoCode, discount, scheduledFor, saveAddress }: StripeCheckoutFormProps) {
+export default function StripeCheckoutForm({ clientSecret, onSuccess, address, promoCode, scheduledFor, saveAddress }: StripeCheckoutFormProps) {
   if (!stripePromise) return null;
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe" } }}>
-      <InnerForm onSuccess={onSuccess} address={address} promoCode={promoCode} discount={discount} scheduledFor={scheduledFor} saveAddress={saveAddress} />
+      <InnerForm onSuccess={onSuccess} address={address} promoCode={promoCode} scheduledFor={scheduledFor} saveAddress={saveAddress} />
     </Elements>
   );
 }

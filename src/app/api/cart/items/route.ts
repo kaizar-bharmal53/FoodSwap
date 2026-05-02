@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
   const { productId, quantity } = body;
   const note = (body as Record<string, unknown>).note as string | undefined;
 
-  if (!productId || typeof quantity !== "number" || quantity < 1) {
+  if (!productId || typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
     return NextResponse.json(
-      { error: "productId and quantity (≥1) are required" },
+      { error: "productId and quantity (integer 1–100) are required" },
       { status: 400 }
     );
   }
